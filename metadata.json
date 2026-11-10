@@ -1,0 +1,6 @@
+{
+  "name": "Catharsis: Rage & Zen",
+  "description": "The ultimate stress relief game to smash frustrations, shred rants, and find deep zen through ASMR, physics destruction, and soothing mindfulness.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "/",
+  "name": "Smash and Chill — Free Online Arcade & Stress Relief Mini Games",
+  "short_name": "Smash & Chill",
+  "description": "Play Smash and Chill free online: 15 stress-relief mini games including Plate Smash, Zen Tongue Drum, Whack-A-Stress, and Koi Pond.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#e11d48",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["games", "entertainment", "lifestyle"]
+}

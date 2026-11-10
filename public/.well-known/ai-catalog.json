@@ -1,0 +1,78 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "SmashChill Arcade",
+    "identifier": "urn:air:smashchill.online:studio",
+    "documentationUrl": "https://smashchill.online/llms.txt",
+    "logoUrl": "https://smashchill.online/icon.svg"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:smashchill.online:tool:stress-relief-games",
+      "displayName": "SmashChill Anti-Stress Web Arcade",
+      "type": "application/json",
+      "data": {
+        "name": "SmashChill",
+        "description": "Interactive browser-based stress relief mini-games, tactile ASMR toys, and cognitive micro-break tools.",
+        "url": "https://smashchill.online/",
+        "categories": ["games", "wellness", "stress-relief", "asmr"],
+        "games": [
+          "Whack-A-Stress",
+          "1v1 Smash Duel",
+          "Hydraulic Press Crusher",
+          "Pop-It 3D Fidget",
+          "Kinetic Sand ASMR Carver",
+          "Newton's Cradle",
+          "Stress Ninja",
+          "ASMR Soap Slicer",
+          "Slap Dummy",
+          "Virtual Rage Room",
+          "Bubble Wrap Pop",
+          "Zen Koi Pond",
+          "Rant Shredder"
+        ]
+      },
+      "description": "Provides access to 13 free anti-stress arcade games and tactile decompression tools directly in the browser.",
+      "version": "1.0.0",
+      "tags": ["stress-relief", "arcade", "asmr", "fidget", "games", "relaxation"],
+      "capabilities": [
+        "PlayWhackAStress",
+        "PlayHydraulicPress",
+        "PlayPopIt3D",
+        "PlayZenKoiPond",
+        "PlayAsmrSoundboard"
+      ],
+      "representativeQueries": [
+        "play free stress relief mini games online",
+        "pop virtual bubble wrap for anxiety relief",
+        "smash office equipment in a virtual rage room",
+        "relax with calming ASMR sounds and singing bowls"
+      ]
+    },
+    {
+      "identifier": "urn:air:smashchill.online:resource:clinical-wellness-blog",
+      "displayName": "SmashChill Clinical Research & Ergonomics Library",
+      "type": "text/markdown",
+      "data": {
+        "title": "SmashChill Clinical Wellness & Neurobiology Articles",
+        "url": "https://smashchill.online/#blog",
+        "topics": [
+          "Science of 5-Minute Micro-Breaks",
+          "Digital Decompression vs. Doomscrolling",
+          "Desk Ergonomics & Wrist Tendon Routines",
+          "Psychology of ASMR Audio & Singing Bowls",
+          "Emotional Regulation & Rage Room Demolition",
+          "Sensory Grounding for ADHD Focus"
+        ]
+      },
+      "description": "Peer-reviewed research and workplace ergonomics protocols on using micro-breaks and tactile play to reduce acute cortisol.",
+      "version": "1.0.0",
+      "tags": ["research", "ergonomics", "neuroscience", "adhd", "workplace-wellness"],
+      "representativeQueries": [
+        "why do 5 minute game breaks reduce workplace stress",
+        "wrist stretches and ergonomic gaming routines for programmers",
+        "neurological effects of ASMR popping sounds on anxiety"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,474 @@
+import fs from 'fs';
+import path from 'path';
+import { PAGES_DATA, StaticPage } from '../src/data/pagesData';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const PUBLIC_DIR = path.resolve(__dirname, '../public');
+const PAGES_DIR = path.resolve(PUBLIC_DIR, 'pages');
+
+if (!fs.existsSync(PAGES_DIR)) {
+  fs.mkdirSync(PAGES_DIR, { recursive: true });
+}
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+const COMMON_HEAD = `
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#e11d48" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="bingbot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="google-site-verification" content="google0cc72dfb11e39ef0" />
+  <meta name="google-adsense-account" content="ca-pub-7658190454263901" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <link rel="apple-touch-icon" href="/icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700&display=swap">
+`;
+
+const COMMON_CSS = `
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #020617;
+    color: #e2e8f0;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.7;
+    font-size: 15.5px;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, .font-heading {
+    font-family: 'Outfit', sans-serif;
+    color: #ffffff;
+    line-height: 1.25;
+  }
+  .font-mono { font-family: 'JetBrains Mono', monospace; }
+  a { color: inherit; text-decoration: none; }
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 24px 20px 80px 20px;
+  }
+  .nav-bar {
+    border-bottom: 1px solid #1e293b;
+    background: rgba(2, 6, 23, 0.94);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .nav-container {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo {
+    font-size: 1.15rem;
+    font-weight: 900;
+    background: linear-gradient(to right, #fbbf24, #f43f5e, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-tag {
+    font-size: 9px;
+    padding: 2px 6px;
+    background: rgba(225, 29, 72, 0.2);
+    border: 1px solid rgba(244, 63, 94, 0.4);
+    color: #fb7185;
+    border-radius: 9999px;
+    font-weight: 800;
+    text-transform: uppercase;
+    -webkit-text-fill-color: #fb7185;
+  }
+  .nav-play-btn {
+    background: linear-gradient(135deg, #e11d48, #d97706);
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 800;
+    box-shadow: 0 4px 14px rgba(225, 29, 72, 0.35);
+    transition: transform 0.15s ease;
+  }
+  .nav-play-btn:hover { transform: scale(1.04); }
+  .breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #94a3b8;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .breadcrumbs a:hover { color: #f43f5e; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(244, 63, 94, 0.15);
+    border: 1px solid rgba(244, 63, 94, 0.35);
+    color: #fda4af;
+    margin-bottom: 16px;
+  }
+  .page-box {
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .section-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin: 32px 0 12px 0;
+    color: #f8fafc;
+    border-left: 3px solid #e11d48;
+    padding-left: 12px;
+  }
+  .section-body p {
+    margin-bottom: 14px;
+    color: #cbd5e1;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+  footer {
+    border-top: 1px solid #1e293b;
+    margin-top: 60px;
+    padding: 30px 20px;
+    text-align: center;
+    font-size: 12px;
+    color: #64748b;
+  }
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .footer-links a:hover { color: #f43f5e; }
+`;
+
+function writePageFiles(targetDir: string, slug: string, content: string) {
+  // 1. file.html
+  fs.writeFileSync(path.join(targetDir, `${slug}.html`), content, 'utf-8');
+  // 2. file/index.html
+  const folder = path.join(targetDir, slug);
+  if (!fs.existsSync(folder)) {
+    fs.mkdirSync(folder, { recursive: true });
+  }
+  fs.writeFileSync(path.join(folder, 'index.html'), content, 'utf-8');
+}
+
+// =========================================================================
+// 1. GENERATE INDIVIDUAL STATIC PAGES (/pages/:slug)
+// =========================================================================
+for (const page of PAGES_DATA) {
+  const canonicalUrl = `https://smashchill.online/pages/${page.slug}`;
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': page.schemaType,
+    name: page.title,
+    description: page.description,
+    url: canonicalUrl,
+    inLanguage: 'en-US',
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'Smash and Chill',
+      url: 'https://smashchill.online/',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'SmashChill Interactive Studio',
+      url: 'https://smashchill.online/',
+      logo: 'https://smashchill.online/icon.svg',
+    },
+  };
+
+  const breadcrumbsLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://smashchill.online/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Pages',
+        item: 'https://smashchill.online/pages',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: page.title.split('|')[0].trim(),
+        item: canonicalUrl,
+      },
+    ],
+  };
+
+  const html = `<!doctype html>
+<html lang="en">
+<head>
+  ${COMMON_HEAD}
+  <title>${escapeHtml(page.title)}</title>
+  <meta name="description" content="${escapeHtml(page.description)}" />
+  <meta name="keywords" content="${escapeHtml(page.keywords)}" />
+  <link rel="canonical" href="${canonicalUrl}" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Smash and Chill" />
+  <meta property="og:url" content="${canonicalUrl}" />
+  <meta property="og:title" content="${escapeHtml(page.title)}" />
+  <meta property="og:description" content="${escapeHtml(page.description)}" />
+  <meta property="og:image" content="https://smashchill.online/icon.svg" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@SmashChillGame" />
+  <meta name="twitter:title" content="${escapeHtml(page.title)}" />
+  <meta name="twitter:description" content="${escapeHtml(page.description)}" />
+
+  <script type="application/ld+json">
+  ${JSON.stringify(jsonLd, null, 2)}
+  </script>
+  <script type="application/ld+json">
+  ${JSON.stringify(breadcrumbsLd, null, 2)}
+  </script>
+
+  <style>
+    ${COMMON_CSS}
+  </style>
+</head>
+<body>
+
+  <header class="nav-bar">
+    <div class="nav-container">
+      <a href="https://smashchill.online/" class="nav-logo" aria-label="Smash and Chill Homepage">
+        <span>⚡ SMASH &amp; CHILL</span>
+        <span class="nav-tag">${escapeHtml(page.category)}</span>
+      </a>
+      <a href="https://smashchill.online/" class="nav-play-btn">
+        <span>Play 15 Games ▶</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="https://smashchill.online/">Home</a>
+      <span>/</span>
+      <a href="https://smashchill.online/pages">Pages</a>
+      <span>/</span>
+      <span style="color: #cbd5e1;">${escapeHtml(page.slug)}</span>
+    </nav>
+
+    <article>
+      <span class="badge">${escapeHtml(page.badge)}</span>
+      <h1 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 8px;">${escapeHtml(page.title.split('|')[0].trim())}</h1>
+      <p style="color: #94a3b8; font-size: 12.5px; margin-bottom: 24px;">
+        Last Updated: ${escapeHtml(page.lastUpdated)} · Official Page URL: <a href="${canonicalUrl}" style="color: #fb7185; text-decoration: underline;">${canonicalUrl}</a>
+      </p>
+
+      <div class="section-body">
+        ${page.sections
+          .map(
+            (sec) => `
+        <section>
+          <h2 class="section-title">${escapeHtml(sec.heading)}</h2>
+          ${sec.body.map((p) => `<p>${escapeHtml(p)}</p>`).join('\n          ')}
+        </section>`
+          )
+          .join('\n')}
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p>© 2026 Smash and Chill Interactive Studio · smashchill.online · All rights reserved.</p>
+    <div class="footer-links">
+      <a href="https://smashchill.online/">All 15 Free Arcade Games</a>
+      <a href="https://smashchill.online/posts">Research Posts</a>
+      <a href="https://smashchill.online/pages">All Pages</a>
+      <a href="https://smashchill.online/pages/privacy-policy">Privacy Policy</a>
+      <a href="https://smashchill.online/pages/terms-of-service">Terms of Service</a>
+      <a href="https://smashchill.online/pages/about">About Us</a>
+      <a href="https://smashchill.online/pages/contact">Contact Support</a>
+      <a href="https://smashchill.online/pages/medical-disclaimer">Disclaimer</a>
+      <a href="https://smashchill.online/pages/dmca-policy">DMCA</a>
+      <a href="https://smashchill.online/pages/faq">FAQ</a>
+    </div>
+  </footer>
+
+</body>
+</html>
+`;
+
+  // 1. Write under /pages/:slug
+  writePageFiles(PAGES_DIR, page.slug, html);
+
+  // 2. Write aliases under /pages/:alias
+  for (const alias of page.aliases) {
+    writePageFiles(PAGES_DIR, alias, html);
+  }
+
+  // 3. Write root shortcuts (e.g. /privacy, /terms, /about, /contact) for backward compatibility
+  writePageFiles(PUBLIC_DIR, page.slug, html);
+  for (const alias of page.aliases) {
+    writePageFiles(PUBLIC_DIR, alias, html);
+  }
+
+  console.log(`Generated Page: /pages/${page.slug} (+ aliases: ${page.aliases.join(', ')})`);
+}
+
+// =========================================================================
+// 2. GENERATE ALL PAGES DIRECTORY / HUB (/pages)
+// =========================================================================
+const pagesHubJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Smash and Chill Pages Directory',
+  description: 'Official corporate, legal, compliance, safety, and support pages for Smash and Chill (smashchill.online).',
+  url: 'https://smashchill.online/pages',
+  publisher: {
+    '@type': 'Organization',
+    name: 'SmashChill Interactive Studio',
+    url: 'https://smashchill.online/',
+  },
+  hasPart: PAGES_DATA.map((p) => ({
+    '@type': 'WebPage',
+    name: p.title,
+    url: `https://smashchill.online/pages/${p.slug}`,
+  })),
+};
+
+const pagesHubHtml = `<!doctype html>
+<html lang="en">
+<head>
+  ${COMMON_HEAD}
+  <title>Pages Directory | Smash and Chill (smashchill.online)</title>
+  <meta name="description" content="Explore all official corporate, legal, compliance, safety, and player help pages for Smash and Chill." />
+  <link rel="canonical" href="https://smashchill.online/pages" />
+
+  <style>
+    ${COMMON_CSS}
+    .hub-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    @media (min-width: 640px) {
+      .hub-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .page-card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 18px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+    .page-card:hover {
+      border-color: #f43f5e;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="nav-bar">
+    <div class="nav-container">
+      <a href="https://smashchill.online/" class="nav-logo" aria-label="Smash and Chill Homepage">
+        <span>⚡ SMASH &amp; CHILL</span>
+        <span class="nav-tag">PAGES</span>
+      </a>
+      <a href="https://smashchill.online/" class="nav-play-btn">
+        <span>Play Games ▶</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="https://smashchill.online/">Home</a>
+      <span>/</span>
+      <span style="color: #cbd5e1;">Pages Directory</span>
+    </nav>
+
+    <header style="text-align: center; margin-bottom: 32px;">
+      <span class="badge">OFFICIAL PAGES CATALOG</span>
+      <h1 style="font-size: 2.3rem; font-weight: 900; margin-bottom: 10px;">Corporate, Legal &amp; Help Pages</h1>
+      <p style="color: #94a3b8; max-width: 600px; margin: 0 auto; font-size: 14px;">
+        Browse all official website pages, policy documents, DMCA compliance notices, author team credentials, and contact desks for Smash and Chill.
+      </p>
+    </header>
+
+    <div class="hub-grid">
+      ${PAGES_DATA.map(
+        (p) => `
+        <article class="page-card">
+          <div>
+            <span style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: #fb7185; margin-bottom: 6px; display: inline-block;">${escapeHtml(p.category)} · ${escapeHtml(p.badge)}</span>
+            <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 8px; color: #ffffff;">
+              <a href="https://smashchill.online/pages/${p.slug}">${escapeHtml(p.title.split('|')[0].trim())}</a>
+            </h2>
+            <p style="font-size: 13px; color: #94a3b8; line-height: 1.6;">${escapeHtml(p.description)}</p>
+          </div>
+          <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #1e293b; display: flex; align-items: center; justify-content: space-between;">
+            <span class="font-mono" style="font-size: 11px; color: #64748b;">/pages/${escapeHtml(p.slug)}</span>
+            <a href="https://smashchill.online/pages/${p.slug}" style="font-size: 12px; font-weight: 800; color: #38bdf8;">View Page →</a>
+          </div>
+        </article>
+      `
+      ).join('\n')}
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 Smash and Chill Interactive Studio · smashchill.online · All rights reserved.</p>
+    <div class="footer-links">
+      <a href="https://smashchill.online/">All 15 Free Arcade Games</a>
+      <a href="https://smashchill.online/posts">Research Posts</a>
+      <a href="https://smashchill.online/pages">All Pages</a>
+      <a href="https://smashchill.online/pages/privacy-policy">Privacy Policy</a>
+      <a href="https://smashchill.online/pages/terms-of-service">Terms of Service</a>
+      <a href="https://smashchill.online/pages/about">About Us</a>
+      <a href="https://smashchill.online/pages/contact">Contact Support</a>
+    </div>
+  </footer>
+
+</body>
+</html>
+`;
+
+writePageFiles(PAGES_DIR, 'index', pagesHubHtml);
+fs.writeFileSync(path.join(PUBLIC_DIR, 'pages.html'), pagesHubHtml, 'utf-8');
+console.log('Generated Pages Directory Hub: /pages');
